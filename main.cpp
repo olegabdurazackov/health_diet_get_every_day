@@ -1,9 +1,8 @@
 /***************************************
- * gcc main_bak.cpp -lsqlite3
  *
  * g++ -o kilo -g main.cpp -lsqlite3 
  * gdb kilo
- * rel 0-07
+ * rel 2-08
  * ************************************/
 
 
@@ -17,16 +16,16 @@
 #include <string.h>
 #include <time.h>
 #include "escape.h"
-#include "int3char.cpp"
-#include "charint.cpp"
+#include "int3char.h"
+#include "charint.h"
 
-//std::string pole_data;
+#define DB "/usr/local/share/diet/kkal.db"
+
 std::string datata="data";
 const char *cdata=datata.c_str();
 char data_end;
 int icolor=0;
 char gargv[100][100];
-//char **gaz_col_name;
 
 static int callback(void *not_used,int argc,char **argv,char **az_col_name)
 {
@@ -43,10 +42,7 @@ static int callback_norma(void *not_used,int argc,char **argv,char **az_col_name
     printf(" arg=%d",argc);
      for (int i=0;i<argc;i++)
     {
-      //  printf("%s= %s\t",az_col_name[i],argv[i]?argv[i]:"NULL");
-     //   gaz_col_name[i]=az_col_name[i];
         *gargv[i]=*strcpy(gargv[i],argv[i]);
-      //  printf("/gargv[i]=%s/i=%d",gargv[i],i);
     }
     
     printf("\n");
@@ -86,7 +82,6 @@ static int callback_dp(void *not_used,int argc,char **argv,char **az_col_name)
     }
     resetcolor();
     cout<<"\n\n";
-//    cout<<gargv[0];
     return 0;
 }
 
@@ -106,7 +101,6 @@ static int callback_food(void *not_used,int argc,char **argv,char **az_col_name)
     }
     for (int i=0;i<argc;i++)
     {
-        //printf("%s= %s\t",az_col_name[i],argv[i]?argv[i]:"NULL");
         if (strcmp(az_col_name[i],"name")==0){
             cout<<"\n";//<<az_col_name[i];
             set_display_atrib(B_YELLOW);
@@ -117,7 +111,6 @@ static int callback_food(void *not_used,int argc,char **argv,char **az_col_name)
     }
     for (int i=0;i<argc;i++)
     {
-        //printf("%s= %s\t",az_col_name[i],argv[i]?argv[i]:"NULL");
         cout.width(10);
         if (strcmp(az_col_name[i],"name")!=0){
           cout<<az_col_name[i]<<"= ";
@@ -147,11 +140,8 @@ static int callback_pot(void *not_used,int argc,char **argv,char **az_col_name)
     }
     for (int i=0;i<argc;i++)
     {
-        //printf("%s= %s\t",az_col_name[i],argv[i]?argv[i]:"NULL");
-        //cout<<cdata<<" -- "<<az_col_name[i]<<"  ";
         if(strcmp(az_col_name[i],cdata)==0)
         {
-            //cout<<"\n"<<az_col_name[i]<<"\n";
             const size_t lande=sizeof argv[i];
             if (data_end==argv[i][lande+1])
             {
@@ -168,7 +158,6 @@ static int callback_pot(void *not_used,int argc,char **argv,char **az_col_name)
         cout.width(4);
         cout.precision(1);
         cout<<(argv[i]?argv[i]:"NULL")<<"  ";
-        //if ((i+1)%4==0){cout<<"\n";}
     }
     cout<<"\n";
     resetcolor();
@@ -194,7 +183,6 @@ int select_max_food(sqlite3 *db){
     char *z_err_mes=0;
     
     std::cin>>std::setw(20)>>elem>>std::setw(20)>>cou;
-    //std::cout<<nameprod;
     std::string ssql="select * from food_ordnung order by "
         +(std::string)elem+" desc limit "+(std::string)cou+" ;";
     std::cout<<ssql;
@@ -245,8 +233,6 @@ int select(sqlite3 *db,char *table)
             error(rc,"not select %s\n",z_err_mes,"select ok\n");
         }
 
-    //int rc=sqlite3_exec(db,sql,callback,0,&z_err_mes);
-    //error(rc,"not select %s\n",z_err_mes,"select ok\n");
     return 0;
 
 }
@@ -406,7 +392,7 @@ int main(int argc,char **argv)
     setlocale(LC_ALL,"Russian");
     sqlite3 *db;
     char *z_err_mes=0;
-    int rc=sqlite3_open("kkal.db",&db);
+    int rc=sqlite3_open(DB,&db);
     if (rc) 
     {
         fprintf(stderr,"не могу открыть %s\n",sqlite3_errmsg(db));
@@ -542,9 +528,6 @@ int main(int argc,char **argv)
         printf(menu);
         std::cin>>sel;
     }
-//    std::cin>>sysdat;
-//    insert(db,"com");
-//    select(db,"food");
 
     sqlite3_close(db);
     return 0;
