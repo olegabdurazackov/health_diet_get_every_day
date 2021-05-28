@@ -9,7 +9,7 @@ $(TARGET): $(ESCP).h $(LIB).h $(LIB).cpp $(CHILD).h $(CHILD).cpp main.cpp
 
 install: $(TARGET)
 	mkdir /usr/local/share/$(TARGET)/
-	mv $(TARGET) /usr/local/bin/
+	cp $(TARGET) /usr/local/bin/
 	cp $(DB) /usr/local/share/$(TARGET)/
 
 uninstall: $(TARGET)
